@@ -52,7 +52,14 @@
     \subsection*{Outlier Detection}
     \hspace{\parindent} 
 
+    As we are predicting a binary variable, we can't easily find outliers numerical for the response variable, so we look at the 3 numerical features, \texttt{age}, \texttt{educationnum}, and \texttt{hoursperweek}. As we have more than 30000 observations from the census, we may confidently use standardized methods, we will also use the iqr test.
     
+    The range for \texttt{age} is 17 to 90. First, we standardize the distribution, and we find 122 observations with absolute values of $z$-scores larger than 3 with their ages ranging 78 to 90. Then, we find 172 observations that fall outside of the range of $(q1-1.5(\text{iqr}), q3+1.5(\text{iqr}))$ with the range being 76 to 90. The median and mean methods granting similar results would indicate \texttt{age} is not heavily skewed (verified by $\mu \approx 38.4$, $q2 = 37$), and should be treated as a normal distribution. A potential outlier subset of $<200$ observations should also not influence the data heavily.
+
+    The range for \texttt{educationnum} is 4 to 19, with 19 being the standard number of years of education for someone with a doctorate degree. We find the exact same 202 observations that have 4 or 5 years of education to be the outliers under both the standardized $z$ test and the iqr test, thus no heavy skewness expected, which is again verified by $\mu \approx 13.1$ while $q2 = 13$. We also don't expect these outliers to be impactful to the total data due to its small size.
+
+    The range for \texttt{hoursperweek} is 1 to 99, We find 450 observations that take values in $[1, 4] \cup [77, 99]$ through the standardized $z$ test, but through the iqr test, we find a total of 8092 observations that take value in 74 out of the original data's 94 unique values to be potential outliers. Although we wouldn't expect 450 potential outliers to heavily impact the data, 8092 is concerning. We find that $\mu \approx 41$ while $q2 = 40$, thus we may temporarily assign the cause of this being the distribution of \texttt{hoursperweek} having high kurtosis, and reasonably only treat the original 450 observations as potential outliers for \texttt{hoursperweek}.
+
     \subsection*{Summary Statistics}
     \hspace{\parindent} 
 
