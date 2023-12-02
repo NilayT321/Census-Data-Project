@@ -47,5 +47,31 @@
     First, we removed variables \texttt{capitalgain, capitalloss} simply due to most observations having missing values for them, then we removed variables \texttt{fnlwgt} as we note \href{https://www.kaggle.com/datasets/uciml/adult-census-income}{here}, \texttt{fnlwgt} being heavily determined by \texttt{age, race, sex} will produce high multicollinearity. We removed \texttt{education} for the same reason, as it's simply categorical representations of \texttt{educationnum}. We then removed \texttt{relationship} as it also causes multicollinearity with \texttt{sex}, as husband/wife would be associated with male/female. We lastly removed \texttt{nativecountry} simply because there are too many different categorical responses, with some holding so few observations while the variable itself has many missing values. 
 
      For further data cleaning, we first re-coded \texttt{sex, 50k} to binary variables, and \textbf{Federal-gov, Local-gov, State-gov} under \texttt{workclass} all to \textbf{gov}. We then added $3$ to every observation in \texttt{educationnum}, the $\#$ of years an individual spent in education, as it was strangely counting 3 years less (for example 10th grade in \texttt{education} only having \texttt{educationnum} of 7). Lastly, we removed the observations that have missing values in \texttt{workclass, occupation}, further the 21 observations with responses \textbf{Never-worked} and \textbf{Without-pay}, the dataset still has 30703 observations after data cleaning.
-     
+
+\section*{Exploratory Data Analysis}
+    \subsection*{Outlier Detection}
+    \hspace{\parindent} 
+
+    
+    \subsection*{Summary Statistics}
+    \hspace{\parindent} 
+
+    
+    \subsection*{Data Visualization}
+    \hspace{\parindent} 
+
+    
+\section*{Prediction Algorithms/Results}
+    \subsection*{Support Vector Machines (SVN)}
+    \hspace{\parindent} 
+
+
+    \subsection*{Random Forest}
+    \hspace{\parindent} 
+
+    
+\section*{Qualitative Discussion}
+\hspace{\parindent} 
+
+    
 \end{document}
