@@ -54,12 +54,30 @@
 
     As we are predicting a binary variable, we can't easily find outliers numerical for the response variable, so we look at the 3 numerical features, \texttt{age}, \texttt{educationnum}, and \texttt{hoursperweek}. As we have more than 30000 observations from the census, we may confidently use standardized methods, we will also use the iqr test.
     
-    The range for \texttt{age} is 17 to 90. First, we standardize the distribution, and we find 122 observations with absolute values of $z$-scores larger than 3 with their ages ranging 78 to 90. Then, we find 172 observations that fall outside of the range of $(q1-1.5(\text{iqr}), q3+1.5(\text{iqr}))$ with the range being 76 to 90. The median and mean methods granting similar results would indicate \texttt{age} is not heavily skewed (verified by $\mu \approx 38.4$, $q2 = 37$), and should be treated as a normal distribution. A potential outlier subset of $<200$ observations should also not influence the data heavily.
+    The range for \texttt{age} is 17 to 90. First, we standardize the distribution, and we find 122 observations with absolute values of $z$-scores larger than 3 with their ages ranging 78 to 90. Then, we find 172 observations that fall outside of the range of $(q1-1.5(\text{iqr}), q3+1.5(\text{iqr}))$ with the range being 76 to 90. As we have lots of observations, while most of the suspected outliers are overlapped, we will use the iqr test's set of suspected outliers, we then observe its histogram before and after removing the suspected outliers, here are the results:
+    \begin{center}
+    \includegraphics[scale = 0.3]{hist_age_before.png}
+    \includegraphics[scale = 0.3]{hist_age_after.png}
+    \end{center}
+    
+    The range for \texttt{educationnum} is 4 to 19, with 19 being the standard number of years of education for someone with a doctorate degree. We find the exact same 202 observations that have 4 or 5 years of education to be the outliers under both the standardized $z$ test and the iqr test, we may observe the histograms from before and after removing the suspected outliers:
+    \begin{center}
+    \includegraphics[scale = 0.3]{hist_edu_before.png}
+    \includegraphics[scale = 0.3]{hist_edu_after.png}
+    \end{center}
 
-    The range for \texttt{educationnum} is 4 to 19, with 19 being the standard number of years of education for someone with a doctorate degree. We find the exact same 202 observations that have 4 or 5 years of education to be the outliers under both the standardized $z$ test and the iqr test, thus no heavy skewness expected, which is again verified by $\mu \approx 13.1$ while $q2 = 13$. We also don't expect these outliers to be impactful to the total data due to its small size.
+    The range for \texttt{hoursperweek} is 1 to 99, We find 450 observations that take values in $[1, 4] \cup [77, 99]$ through the standardized $z$ test, but through the iqr test, we find a total of 8092 observations that take value in 74 out of the original data's 94 unique values to be potential outliers. Although we wouldn't expect 450 potential outliers to heavily impact the data, 8092 is concerning. We find that $\mu \approx 41$ while $q2 = 40$, we may temporarily assign the cause of this being the distribution of \texttt{hoursperweek} having high kurtosis. We will look at the histograms after removing the different subsets of suspected outliers:
 
-    The range for \texttt{hoursperweek} is 1 to 99, We find 450 observations that take values in $[1, 4] \cup [77, 99]$ through the standardized $z$ test, but through the iqr test, we find a total of 8092 observations that take value in 74 out of the original data's 94 unique values to be potential outliers. Although we wouldn't expect 450 potential outliers to heavily impact the data, 8092 is concerning. We find that $\mu \approx 41$ while $q2 = 40$, thus we may temporarily assign the cause of this being the distribution of \texttt{hoursperweek} having high kurtosis, and reasonably only treat the original 450 observations as potential outliers for \texttt{hoursperweek}.
+    \begin{center}
+    \includegraphics[scale = 0.22]{hist_hpw_before.png}
+    \includegraphics[scale = 0.22]{hist_hpw_after_1.png}
+    \includegraphics[scale = 0.22]{hist_hpw_after_2.png}
+    \end{center}
 
+    We note that distributions for both \texttt{age} and \texttt{educationnum} are seemingly more normally distributed for removing this little number of observations, thus we will keep these changes. For \texttt{hoursperweek}, we note that with the high percentage of data suspected as outliers by the iqr test, hist$\_$hpw$\_$after$\_$2 may be too extreme for not too significant result as we note \texttt{hoursperweek} equals to 40 for 14522 of the observations, near half, thus removing further beyond hist$\_$hpw$\_$after$\_$1 may unnecessarily erase reasonable spread useful for further analysis later.  
+
+    There are still 29895 observations remaining after removing the suspected outliers, from which we may note that there are few overlaps. Further analysis will continue from here.
+    
     \subsection*{Summary Statistics}
     \hspace{\parindent} 
 
