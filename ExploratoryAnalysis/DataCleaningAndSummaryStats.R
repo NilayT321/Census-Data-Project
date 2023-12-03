@@ -1,7 +1,7 @@
 library(tidyverse)
 
 adultvars <- c("age", "workclass", "fnlwgt", "education", "educationnum", 
-               "martialstatus", "occupation", "relationship", "race", "sex", 
+               "maritalstatus", "occupation", "relationship", "race", "sex", 
                "capitalgain", "capitalloss", "hoursperweek", "nativecountry", "50k")
 
 adult <- read.csv("adult.data", header = FALSE, col.names = adultvars , skip = 1)
