@@ -3,7 +3,13 @@ library(e1071)
 
 adult = read.csv("Adult_NoOutlier.csv")
 adult = subset(adult, select = -c(X))
+
 adult$X50k = as.factor(adult$X50k)
+adult$workclass = as.factor(adult$workclass)
+adult$maritalstatus = as.factor(adult$maritalstatus)
+adult$occupation = as.factor(adult$occupation)
+adult$sex = as.factor(adult$sex)
+
 n_obs = nrow(adult)
 
 # Set seed for reproducibility
@@ -18,7 +24,8 @@ adult_test = setdiff(adult, adult_train)
 levels(adult_test$X50k) = levels(adult_train$X50k)
 
 # Find an appropriate value of C to use in the model 
-candidate_Cs = 2^seq(-5, 7, by = 0.7)
+# The code takes a long time to run, so pick a smaller set of values
+candidate_Cs = 2^seq(-5, 5, by = 1)
 
 K = 10 # 10-fold CV
 err_matrix = matrix(0, K, length(candidate_Cs))
@@ -34,8 +41,15 @@ for (k in 1:K) {
   valid_fold = adult_train[fold_lower_cutoff:fold_upper_cutoff, ]
   learn_fold = setdiff(adult_train, valid_fold)
   
+  valid_features = valid_fold[,1:7]
+  valid_Y = valid_fold[,8]
+  
+  learn_features = learn_fold[,1:7]
+  learn_Y = learn_fold[,8]
+  
   # Loop through each value in the candidate set 
   for (i in 1:length(candidate_Cs)) {
+    print(sprintf("Currently on fold %d, iteration %d", k, i))
     current_C = candidate_Cs[i]
     
     # Fit a SVM model on the learning set using the current C
@@ -44,5 +58,9 @@ for (k in 1:K) {
     
     # Create predictions on the validation set
     current_preds = predict(current_svm, valid_fold[,1:7])
+    
+    # Insert the mean test error in the matrix 
+    err_matrix[k, i] = mean(current_preds != valid_Y)
+    
   }
 }
