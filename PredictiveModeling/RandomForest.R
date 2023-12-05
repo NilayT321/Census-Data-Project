@@ -2,7 +2,7 @@ library(dplyr)
 library(magrittr)
 
 
-adult <- adult[sample(1:nrow(adult), nrow(adult)), ]
+adult <- read.csv("Adult_NoOutlier.csv")
 
 wordsadult <- c("age", "workclass", "educationnum", 
                 "martialstatus", "occupation", "sex", 
@@ -11,8 +11,9 @@ wordsadult <- c("age", "workclass", "educationnum",
 # Standardization
 n <- nrow(adult)
 
-Y <- as.factor(adult$X50k)
-X <- as.data.frame(adult[, wordsadult])
+# Y <- as.factor(adult$X50k)
+# X <- as.data.frame(adult[, wordsadult])
+X <- adult
 
 X <- cbind(rep(1, n), X)
 
