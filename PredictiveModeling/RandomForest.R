@@ -1,58 +1,41 @@
 library(dplyr)
 library(magrittr)
-
-
-adult <- read.csv("Adult_NoOutlier.csv")
-
-wordsadult <- c("age", "workclass", "educationnum", 
-                "martialstatus", "occupation", "sex", 
-                "hoursperweek", "X50k")
-
-# Standardization
-n <- nrow(adult)
-
-# Y <- as.factor(adult$X50k)
-# X <- as.data.frame(adult[, wordsadult])
-X <- adult
-
-X <- cbind(rep(1, n), X)
-
-p <- ncol(X)
-
-for (j in 2:p) {
-  if (is.numeric(X[, j])) {
-    X[, j] <- (X[, j] - mean(X[, j], na.rm = TRUE)) / sd(X[, j], na.rm = TRUE)
-  }
-}
-
-# Analysis using random forest
-set.seed(1)
-
-reorder <- sample(1:n, n, replace = FALSE)
-
-X <- X[reorder, ]
-Y <- Y[reorder]
-
-n_learn <- 500
-n_test <- 2000
-
-Y_test <- Y[1:n_test]
-Y_learn <- Y[(n_test + 1):(n_test + n_learn)]
-
-X_test <- X[1:n_test, ]
-X_learn <- X[(n_test + 1):(n_test + n_learn), ]
-
 library(randomForest)
 
-# Constructs randomForest model
-mdl <- randomForest(x = X_learn[, -1], y = Y_learn, ntree = 10, mtry = 3, nodesize = 10, importance = TRUE)
 
-print(mdl)
+set.seed(123)  # Set a seed for reproducibility
+train_indices <- sample(1:nrow(adult2), 0.8 * nrow(adult2))
+train_data <- adult2[train_indices, ]
+test_data <- adult2[-train_indices, ] 
 
-Y_pred <- predict(mdl, newdata = X_test)
 
-# Evaluate test error
-rf_test_error <- sum(Y_test != Y_pred) / length(Y_test)
+target_variable <- "X50k"
+predictor_variables <- setdiff(names(train_data), target_variable)
 
-print("Test Error of Random Forest:")
-print(rf_test_error)
+# Train the random forest model
+rf_model <- randomForest(formula = as.formula(paste(target_variable, "~ .")),
+                         data = test_data,
+                         ntree = 200)
+
+# Make predictions on the test dataset
+predictions <- predict(rf_model, newdata = test_data)
+
+# Print the predictions
+print(predictions)
+
+print(rf_model)
+
+
+# Extract the target variable from the testing dataset
+Y_test_actual <- test_data$X50k
+
+# Make predictions using the random forest model
+Y_test_pred <- predict(rf_model, newdata = test_data)
+
+# Calculate the mean squared error (MSE) as the test error
+test_error <- mean((Y_test_actual - Y_test_pred)^2)
+
+# Print or use the test error as needed
+print(paste("Test Error (MSE):", test_error))
+
+adult2$predicted_class <- predict(rf_model, newdata = adult2, type = "response")
