@@ -3,20 +3,6 @@ library(e1071)
 
 set.seed(2)
 adult = read.csv("Adult_NoOutlier.csv")
-adult = subset(adult, select = -c(X))
-
-# Get the raw adult data
-raw_adult = read.csv("adult.data")
-
-# Recode martial status 
-# Married-AF-spuse and Married-civ-spuse and Married-spouse absent -> Married 
-# Divorced, never-married, separated, widowed
-adult$maritalstatus = case_when(
-  adult$maritalstatus %in% c(" Married-civ-spouse", " Married-AF-spouse", "Married-spouse-absent") ~ "Married",
-  adult$maritalstatus %in% c(" Divorced", " Separated") ~ "Divorced/Separated",
-  adult$maritalstatus %in% c(" Never-married") ~ " NeverMarried",
-  adult$maritalstatus %in% c(" Widowed") ~ "Widowed"
-)
 
 adult$workclass = as.factor(adult$workclass)
 adult$maritalstatus = as.factor(adult$maritalstatus)

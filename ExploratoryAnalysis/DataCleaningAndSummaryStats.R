@@ -26,9 +26,9 @@ adult <- adult %>%
                       " gov", workclass))
 
 adult$maritalstatus = case_when(
-  adult$maritalstatus %in% c(" Married-civ-spouse", " Married-AF-spouse", "Married-spouse-absent") ~ "Married",
-  adult$maritalstatus %in% c(" Divorced", " Separated", "Widowed") ~ "DSW",
-  adult$maritalstatus %in% c(" Never-married") ~ " NeverMarried",
+  adult$maritalstatus %in% c(" Married-civ-spouse", " Married-AF-spouse", " Married-spouse-absent") ~ "Married",
+  adult$maritalstatus %in% c(" Divorced", " Separated", " Widowed") ~ "DSW",
+  adult$maritalstatus %in% c(" Never-married") ~ "NeverMarried",
 )
 
 #workclass, occupation filtering:
