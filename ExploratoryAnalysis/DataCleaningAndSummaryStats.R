@@ -4,10 +4,10 @@ adultvars <- c("age", "workclass", "fnlwgt", "education", "educationnum",
                "maritalstatus", "occupation", "relationship", "race", "sex", 
                "capitalgain", "capitalloss", "hoursperweek", "nativecountry", "50k")
 
-adult <- read.csv("adult.data", header = FALSE, col.names = adultvars , skip = 1)
+adult_raw <- read.csv("adult.data", header = FALSE, col.names = adultvars , skip = 1)
 
 #Remove unwanted variable:
-adult <- subset(adult, select = -c(capitalgain, capitalloss, fnlwgt,
+adult <- subset(adult_raw, select = -c(capitalgain, capitalloss, fnlwgt,
                                     race, nativecountry, education, relationship))
 
 #sex and 50k binary:
@@ -19,11 +19,18 @@ adult$sex<- as.numeric(adult$sex)
 adult$X50k <- as.factor(adult$X50k)
 adult$X50k <- as.numeric(adult$X50k)
 
-#Re-code workclass
+#Re-code workclass, maritalstatus
 adult <- adult %>%
   mutate(workclass = ifelse(workclass %in% 
                       c(" Federal-gov", " Local-gov", " State-gov"), 
                       " gov", workclass))
+
+adult$maritalstatus = case_when(
+  adult$maritalstatus %in% c(" Married-civ-spouse", " Married-AF-spouse", "Married-spouse-absent") ~ "Married",
+  adult$maritalstatus %in% c(" Divorced", " Separated") ~ "Divorced/Separated",
+  adult$maritalstatus %in% c(" Never-married") ~ " NeverMarried",
+  adult$maritalstatus %in% c(" Widowed") ~ "Widowed"
+)
 
 #workclass, occupation filtering:
 adult <- adult %>% 
