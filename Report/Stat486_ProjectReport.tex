@@ -140,8 +140,11 @@
     \hspace{\parindent} 
 
 We employed a random forest predictive model as our chosen approach for this analysis. The initial step involved splitting our dataset into training data and testing data, opting for a 20/80 split. This division allows us to train the model on a subset of the data and evaluate its performance on unseen instances. For the random forest model, we set the number of trees (ntree) to 200, a decision made to increase the model's ability to capture complex relationships within the data.
+
 Despite our efforts to enhance the model's performance, the variance explained remained relatively low, even after introducing additional variables, increasing the number of trees, and adjusting the mtry parameter. The challenge of increasing the variance explained could be attributed to the complexity of the underlying patterns in the data or potential interactions between variables that are not adequately captured by the model.
+
 Interestingly, while the variance explained posed challenges, the Mean Squared Error (MSE) of the model remained low at 0.06. The low MSE indicates that the model's predictions are accurate, suggesting that it performs well in minimizing the squared differences between predicted and actual values. This discrepancy between low variance explained and low MSE could signify that the model is making accurate predictions despite not capturing the full complexity of the underlying relationships.
+
 If we were to continue to work with this data set we might try to explore alternative modeling techniques  or consider gathering additional relevant variables to improve the model's ability to explain variance. 
     
 \section{Qualitative Discussion}
