@@ -25,11 +25,17 @@ adult$sex = as.factor(adult$sex)
 
 # Recode the response to a logical 
 # X50k = 1 (means <=50K, so mark it FALSE), other is TRUE
-adult$X50k = ifelse(adult$X50k == "1", FALSE, TRUE)
+# adult$X50k = ifelse(adult$X50k == "1", FALSE, TRUE)
 
 # The code is taking too long to run. We will use a smaller sample of the data
 # Only take 3000 observations from the adult data set 
 adult_sample = adult %>% sample_n(size = 3000)
+
+# Standardize numerical features
+adult_sample = adult_sample %>%
+  mutate(age = (age - mean(age))/sd(age),
+         educationnum = (educationnum - mean(educationnum))/sd(educationnum),
+         hoursperweek = (hoursperweek - mean(hoursperweek))/sd(hoursperweek))
 
 n_obs = nrow(adult_sample)
 
@@ -73,8 +79,7 @@ for (k in 1:K) {
                       kernel = "linear", cost = current_C)
     
     # Create predictions on the validation set
-    current_preds = predict(current_svm, valid_fold[,1:7])
-    current_preds = as.logical(current_preds)
+    current_preds = predict(current_svm, valid_fold)
     
     # Insert the mean test error in the matrix 
     err_matrix[k, i] = mean(current_preds != valid_fold$X50k)
@@ -96,7 +101,6 @@ final_SVM = svm(X50k ~ ., data = adult_train, type = "C-classification",
 
 # Get predictions 
 final_SVM_preds = predict(final_SVM, adult_test)
-final_SVM_preds = as.logical(final_SVM_preds)
 
 # Get the mean test error 
 test_error = mean(final_SVM_preds != adult_test$X50k)

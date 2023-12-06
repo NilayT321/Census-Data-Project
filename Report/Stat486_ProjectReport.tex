@@ -10,6 +10,10 @@
 \usepackage[titles]{tocloft}
 \usepackage[titles]{tocloft}
 \usepackage{url}
+\usepackage{minted}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{booktabs}
 \usepackage{hyperref}
 
 % Formatting
@@ -35,9 +39,17 @@
 \newcommand{\Course}{{\bf 01:960:486}}
 \newcommand{\Topic}{Nilay, Katharina, HaoYang, Rajeev}
 
+\title{Binary Prediction Of Income Level Based on United States Census Data}
+\date{December 7, 2023}
+\author{Nilay Tripathi, Katharina Dowlin, HaoYang Guan, Rajeev Atla}
+
 \begin{document}
 
-\section*{Introductory Description/Data Cleaning}
+\maketitle 
+\tableofcontents
+
+
+\section{Introductory Description/Data Cleaning}
 \hspace{\parindent} 
 
     The data set \href{https://archive.ics.uci.edu/dataset/2/adult}{adult} from UC Irvine's Machine Learning Repository in 1996 was extracted from the 1994 Census database, with a total of 15 variables to predict whether an individual's annual income exceeds $\$50$k
@@ -46,10 +58,10 @@
 
     First, we removed variables \texttt{capitalgain, capitalloss} simply due to most observations having missing values for them, then we removed variables \texttt{fnlwgt} as we note \href{https://www.kaggle.com/datasets/uciml/adult-census-income}{here}, \texttt{fnlwgt} being heavily determined by \texttt{age} and \texttt{sex} will produce high multicollinearity. We removed \texttt{education} for the same reason, as it's simply categorical representations of \texttt{educationnum}. We then removed \texttt{relationship} as it also causes multicollinearity with \texttt{sex}, as husband/wife would be associated with male/female. We removed \texttt{race} as its categories were too broad for us to expect significant findings. We lastly removed \texttt{nativecountry} simply because there are too many different categorical responses, with some holding so few observations while the variable itself has many missing values. 
 
-     For further data cleaning, we first re-coded \texttt{sex, 50k} to binary variables, and \textbf{Federal-gov, Local-gov, State-gov} under \texttt{workclass} all to \textbf{gov}. We then added $3$ to every observation in \texttt{educationnum}, the $\#$ of years an individual spent in education, as it was strangely counting 3 years less (for example 10th grade in \texttt{education} only having \texttt{educationnum} of 7). Lastly, we removed the observations that have missing values in \texttt{workclass, occupation}, further the 21 observations with responses \textbf{Never-worked} and \textbf{Without-pay}, the dataset still has 30703 observations after data cleaning.
+     For further data cleaning, we first re-coded \texttt{sex, X50k} to binary variables, and \textbf{Federal-gov, Local-gov, State-gov} under \texttt{workclass} all to \textbf{gov}. We then added $3$ to every observation in \texttt{educationnum}, the number of years an individual spent in education, as it was strangely counting 3 years less (for example 10th grade in \texttt{education} only having \texttt{educationnum} of 7). Lastly, we removed the observations that have missing values in \texttt{workclass, occupation}, further the 21 observations with responses \textbf{Never-worked} and \textbf{Without-pay}, the dataset still has 30703 observations after data cleaning.
 
-\section*{Exploratory Data Analysis}
-    \subsection*{Outlier Detection}
+\section{Exploratory Data Analysis}
+    \subsection{Outlier Detection}
     \hspace{\parindent} 
 
     As we are predicting a binary variable, we can't easily find outliers numerical for the response variable, so we look at the 3 numerical features, \texttt{age}, \texttt{educationnum}, and \texttt{hoursperweek}. As we have more than 30000 observations from the census, we may confidently use standardized methods, we will also use the iqr test.
@@ -78,25 +90,164 @@
 
     There are still 29895 observations remaining after removing the suspected outliers, from which we may note that there are few overlaps. Further analysis will continue from here.
     
-    \subsection*{Summary Statistics}
+    \subsection{Summary Statistics}
     \hspace{\parindent} 
 
     
-    \subsection*{Data Visualization}
+    \subsection{Data Visualization}
     \hspace{\parindent} 
 
     
-\section*{Prediction Algorithms/Results}
-    \subsection*{Support Vector Machines (SVN)}
-    \hspace{\parindent} 
+\section{Prediction Algorithms/Results}
+    \subsection{Support Vector Machines (SVM)}   
 
+    For the first prediction algorithm, we opted to use the support vector machine (SVM) algorithm to predict the binary response. The model we chose used all predictors availible from the data cleaning, as our prior experience and knowledge about income level led us to believe all predictors would be useful explanatory variables. 
+    
+    Prior to running the model, we standardized the three numerical variables \texttt{age}, \texttt{educationnum}, and \texttt{hoursperweek}. Since the SVM method is based partly on calculating distances, transforming all variables to a standardized scale will help ensure that the method is as accurate as possible and is not being controlled by variables which naturally take on larger values and have larger ranges. Since our data set has over 20,000 observations, computing times for cross validation and predictions became an issue while constructing our model, with many of the code segments taking several minutes to compute, due to the size of the data. Thus, we resorted to only randomly sampling 3,000 observations (roughly $10\%$ of the total data). The size of the sample provides enough observations to construct an accurate model while also being less demanding to compute.  \par 
+    
+    First, we partitioned the sampled data into a training and test set. We opted to include more training observations than test observations, to provide a more insightful model. Specifically, we opted for a $70/30$ training-test split i.e. having $70\%$ of the sample to be training data and the remaining $30\%$ of the sample to be the test data. Thus, we have 2100 training observations and 900 test observations. \par 
+    
+    We remark that the SVM algorithm is dependent on a hyperparameter $C$. This is often called the ``cost'' parameter and represents the leniency that we allow in our predictions. Specifically, it will control the overall number of support vectors that the model will be able to produce. Since the value of our chosen $C$ controls the bias-variance tradeoff, it is essential to pick a good value of $C$. To do so, we tuned the hyperparameter $C$ using cross-validation prior to building the entire model. We opted to use $K = 5$ folds to tune the hyperparameter. We chose $K = 5$ for computation considerations and also since using the more standard $K = 10$ folds did not yield a significant difference in accuracy in the final model. Thus, we proceeded with cross validation with 5 folds. Our set of candidate values is given by 
+    \begin{equation}
+    		\mathcal{C} = \{2^n : -7 \leq n \leq 7, n\in \mathbb{Z}\}
+    \end{equation}
+    The choice of candidate value was governed by relevant examples we saw earlier but was also restricted by our computational limits. After running the cross validation, we find the optimal value of $C$ to be 
+    \begin{equation}
+    		C_{\text{min}} = 0.00781
+    \end{equation}
+    Thus, we used the value of $C_{\text{min}}$ to construct the final SVM model. After constructing the model and running predictions, we find that the test error is 
+    \begin{equation}
+    		\text{SVM Test Error} = 0.294
+    \end{equation}
+    We would like to stress that our data contains a large imbalance of values for the response. From the output in R, we see that 
+    \begin{table}[H]
+    		\centering
+    		\begin{tabular}{cc}
+    			\toprule 
+    			$1$ & $2$ \\ 
+    			2280 & 720 \\ 
+    			\bottomrule
+    		\end{tabular}
+    		\caption{Table giving counts of the \texttt{X50k} variable in our sample.}
+    		\label{tab:countsX50kSample}
+    \end{table}
+    The large imbalance was difficult to correct and is an inherent flaw in the data set provided. This is something that should be noted when assessing the performance of the final model and generalizing its findings. \par 
+    
+    Lastly, the code that was used to compute the cross-validation, fit the final models, and find the test error is given  Appendix \ref{app:SVMCode}.
+	
 
-    \subsection*{Random Forest}
+    \subsection{Random Forest}
     \hspace{\parindent} 
 
     
-\section*{Qualitative Discussion}
+\section{Qualitative Discussion}
 \hspace{\parindent} 
+
+\appendix 
+
+\section{Exploratory Analysis Code Segments}
+
+\subsection{Outlier Detection}
+
+\subsection{Summary Statistics}
+
+\subsection{Data Visualization}
+
+\section{Prediction Algorithms Code Segments}
+
+\subsection{Support Vector Machine (SVM)} \label{app:SVMCode}
+
+\begin{minted}[breaklines, frame = lines]{R}
+library(dplyr)
+library(e1071)
+
+set.seed(2)
+adult = read.csv("Adult_NoOutlier.csv")
+adult = subset(adult, select = -c(X))
+
+# Recode the response to a logical. This makes it easier to do SVM
+# X50k = 1 (means <=50K, so mark it FALSE), other is TRUE
+adult$X50k = ifelse(adult$X50k == "1", FALSE, TRUE)
+
+# The code is taking too long to run. We will use a smaller sample of the data
+# Only take 3000 observations from the adult data set 
+adult_sample = adult %>% sample_n(size = 3000)
+
+n_obs = nrow(adult_sample)
+
+# Use an 70/30 split for the training and test sizes
+n_train = 0.7 * n_obs
+n_test = n_obs - n_train
+
+adult_train = adult_sample[1:n_train, ]
+adult_test = adult_sample[(n_train+1):n_obs,]
+
+# Find an appropriate value of C to use in the model 
+# The code takes a long time to run, so pick a smaller set of values
+candidate_Cs = 2^seq(-7, 7, by = 1)
+
+K = 5 # 10-fold CV
+err_matrix = matrix(0, K, length(candidate_Cs))
+
+# Matrix of folds 
+folds = matrix(1:n_train, K)
+
+# Loop across folds, which are rows of the matrix 
+for (k in 1:K) {
+  
+  # For each fold, create a validation set and a learning set 
+  # 20,000 obs in training set / 10 folds = 2000 in each fold 
+  
+  
+  valid_ix = folds[k,]
+  learn_ix = setdiff(1:n_train, folds[k,])
+  
+  valid_fold = adult_train[valid_ix,]
+  learn_fold = adult_train[learn_ix,]
+  
+  # Loop through each value in the candidate set 
+  for (i in 1:length(candidate_Cs)) {
+    print(sprintf("Currently on fold %d, iteration %d", k, i))
+    current_C = candidate_Cs[i]
+    
+    # Fit a SVM model on the learning set using the current C
+    current_svm = svm(X50k ~ ., data = learn_fold, type = "C-classification",
+                      kernel = "linear", cost = current_C)
+    
+    # Create predictions on the validation set
+    current_preds = predict(current_svm, valid_fold[,1:7])
+    current_preds = as.logical(current_preds)
+    
+    # Insert the mean test error in the matrix 
+    err_matrix[k, i] = mean(current_preds != valid_fold$X50k)
+    
+  }
+}
+
+# Now, get the mean error for each value of C in candidate_C
+mean_errs = apply(err_matrix, 2, mean)
+
+# Get the minimum error
+min_ix = which.min(mean_errs)
+
+C_min = candidate_Cs[min_ix]
+
+# Fit an SVM model with this data set on the entire training set. 
+final_SVM = svm(X50k ~ ., data = adult_train, type = "C-classification",
+                kernel = "linear", cost = C_min)
+
+# Get predictions 
+final_SVM_preds = predict(final_SVM, adult_test)
+final_SVM_preds = as.logical(final_SVM_preds)
+
+# Get the mean test error 
+test_error = mean(final_SVM_preds != adult_test$X50k)
+
+print(sprintf("The final test error for the SVM procedure was %.3f", test_error))
+
+\end{minted}
+
+\subsection{Random Forest}
 
     
 \end{document}
