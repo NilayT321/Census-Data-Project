@@ -15,6 +15,8 @@
 \usepackage{xcolor}
 \usepackage{float}
 \usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
 
 % Formatting
 \topmargin=-0.40in
@@ -90,10 +92,78 @@
 
     There are still 29895 observations remaining after removing the suspected outliers, from which we may note that there are few overlaps. Further analysis will continue from here.
     
+    Lastly, the code for identifying and removing the outliers is given in Appendix  \ref{sec:outlierCode}.
+    
     \subsection{Summary Statistics}
     \hspace{\parindent} 
 
 The seven variables chosen for our analysis encompass key dimensions of an individual's demographic and professional profile. These variables include age, workclass, educationnum, maritalstatus, occupation, sex, and hoursperweek. Our primary goal is to utilize this set of variables to predict whether an individual earns more or less than \$50,000 annually. This prediction task involves a mix of categorical, numerical, and binary variables. Workclass, for instance, encompasses categories such as private employment, self-employment in a corporation, self-employment outside a corporation, and government employment. Occupation variables, on the other hand, group individuals into roles such as sales, farming-fishing, and handlers-cleaners. Additionally, age and hours worked per week are numerical variables, while sex is binary. Within the binary variable X50k, '1' represents individuals earning less than \$50,000 a year, and '2' represents those earning \$50,000 or more.
+
+	To get a preliminary feel for the data, we compute several summary statistics for the variables. Table \ref{fig:numVarsSummaryTab} presents a concise summary of the three numerical variables we will consider.
+	\begin{table}[H] 
+	\centering 
+	\renewcommand*{\arraystretch}{1.1}
+\begin{tabular}{lrrrrrrr}
+\hline
+\hline
+Variable & N & Mean & Std. Dev. & Min & Pctl. 25 & Pctl. 75 & Max \\ 
+\hline
+age & 29895 & 38 & 13 & 17 & 28 & 47 & 75 \\ 
+educationnum & 29895 & 13 & 2.5 & 6 & 12 & 16 & 19 \\ 
+hoursperweek & 29895 & 41 & 11 & 6 & 40 & 45 & 76\\ 
+\hline
+\hline
+\end{tabular}
+\caption{Summary Statistics For Numerical Variables In The Adult Data Set.}
+\label{fig:numVarsSummaryTab}
+
+\end{table}
+
+Now, we generate summary statistics for the categorical variables. We are particularly interested in the relative proportions of each level of each factor. The results are given in the four tables below
+\begin{table}[H]
+	\begin{subtable}[t]{0.33\textwidth}
+		\centering 
+		\begin{tabular}{ll}
+			Level & $\%$ \\ 
+			\midrule 
+			gov & 14\% \\ 
+			private & 74\% \\ 
+			self-employed & 12\%
+		\end{tabular}
+		\caption{Levels of \texttt{workclass}}
+		\label{tab:workclass}
+	\end{subtable}
+	\begin{subtable}[t]{0.33\textwidth}
+		\centering
+		\begin{tabular}{ll}
+			Level & $\%$ \\ 
+			\midrule 
+			DSW & 20\% \\ 
+			Married & 48\% \\ 
+			Never Marrried & 32\%
+		\end{tabular}
+		\caption{Levels of \texttt{martialstatus}}
+		\label{tab:martialstatus}
+	\end{subtable}
+	\begin{subtable}[t]{0.33\textwidth}
+		\centering
+		\begin{tabular}{ll}
+			Level & $\%$ \\ 
+			\midrule 
+			1 (Female) & 32\% \\ 
+			2 (Male) & 68\%
+		\end{tabular}
+		\caption{Levels of \texttt{sex}}
+		\label{tab:martialstatus}
+	\end{subtable}
+	\caption{Tables giving the relative proportions of levels in each categorical variable in the adult data set. }
+\end{table}
+
+	From these results, we see that the levels are roughly evenly distributed for most factors. We note that there is a difference in levels for \texttt{workclass}, with there being substantially more private employees than government employees or self-employed persons. Despite this difference, we didn't feel justified in combining the government and self-employed levels into one, as our prior knowledge about the job market tells us that these two categories have drastic fluctuations in income; if we were to combine these levels, these differences would be obscured. Thus, we left the variable as is. The other variables have roughly even distributions for their levels, so no recoding was necessary in these cases. \par
+	
+	The code for cleaning the data and generating the summary statistics in the tables is given in Appendix \ref{sec:sumStatCode}. 
+	
+	
     
     \subsection{Data Visualization}
     \hspace{\parindent} 
@@ -105,6 +175,8 @@ To gain deeper insights into the data, we conducted visualizations to explore po
 
     \includegraphics[scale = 0.6]{hpw_barplot.png} \includegraphics[scale = 0.6]{workclass_barplot.png}
 \end{center}
+
+The code that was used to generate these plots is given in Appendix \ref{sec:dataVizCode}. 
     
 \section{Prediction Algorithms/Results}
     \subsection{Support Vector Machines (SVM)}   
@@ -121,11 +193,11 @@ To gain deeper insights into the data, we conducted visualizations to explore po
     \end{equation}
     The choice of candidate value was governed by relevant examples we saw earlier but was also restricted by our computational limits. After running the cross validation, we find the optimal value of $C$ to be 
     \begin{equation}
-    		C_{\text{min}} = 0.00781
+    		C_{\text{min}} = 0.5
     \end{equation}
     Thus, we used the value of $C_{\text{min}}$ to construct the final SVM model. After constructing the model and running predictions, we find that the test error is 
     \begin{equation}
-    		\text{SVM Test Error} = 0.294
+    		\text{SVM Test Error} = 0.189
     \end{equation}
     We would like to stress that our data contains a large imbalance of values for the response. From the output in R, we see that 
     \begin{table}[H]
@@ -154,10 +226,16 @@ Despite our efforts to enhance the model's performance, the variance explained r
 Interestingly, while the variance explained posed challenges, the Mean Squared Error (MSE) of the model remained low at 0.06. The low MSE indicates that the model's predictions are accurate, suggesting that it performs well in minimizing the squared differences between predicted and actual values. This discrepancy between low variance explained and low MSE could signify that the model is making accurate predictions despite not capturing the full complexity of the underlying relationships.
 
 If we were to continue to work with this data set we might try to explore alternative modeling techniques  or consider gathering additional relevant variables to improve the model's ability to explain variance. 
+
+Lastly, the code we used to build, train, and test the random forest model is given in Appendix \ref{sec:randForCode}. 
+
+
     
 \section{Qualitative Discussion}
 \hspace{\parindent} 
-
+	
+	The support vector machine (SVM) model training and testing presented us with unique challenges related to building intricate models with a limited amount of computing power. First, we deemed it was necessary to tune the cost hyperparameter $C$ before building a final model. The standard method of $K$-fold cross validation used commonly was too computationally expensive to compute; we therefore reduced the number of folds and number of candidate values to consider while also limiting the scope of the model to a random sample of the available data. Desipte the computational challenges of the SVM method, the final model gave us a satisfactory $0.189$ value for the test error. Even though we had to consider a small subset of the data, the randomness involved in the sampling leaves us optimistic that the predictive power of the model may generalize to similar data as well. 
+	
     The findings from our initial random forest analysis provide valuable insights into the predictive modeling task. Despite the inclusion of seven pertinent variables in our random forest model, we encountered challenges in achieving a high variance explained. The low variance explained may suggest that the model struggled to capture intricate relationships within the data, potentially due to unobserved complexities or interactions among variables. However, the model exhibited a commendable performance with a low Mean Squared Error (MSE) of 0.06, indicating accurate predictions despite the limited variance explained.
     Furthermore, a detailed examination of influential variables and their potential impact on the model is warranted. Visualization revealed no strong correlations between individual variables and the target income level, but careful feature selection and engineering may unearth meaningful relationships. In the future, refining the model architecture and considering more advanced strategies like hyperparameter tuning could optimize predictive accuracy. Overall, a meticulous and iterative approach, incorporating a variety of techniques, will be key to advancing the model's predictive capabilities and unraveling deeper insights from the dataset.
     As for future directions, though our data set still had many observations by the start of algorithms, due to extreme imbalanced distribution of data in categories such as \texttt{educationnum} and \texttt{workclass}, more observations would certainly help our algorithms. And if we had more features, which we thought we had plenty of before we started data cleaning, especially more numerical features, we would be allowed to not only provide better results with our current algorithms, but also perform other predictive algorithms, as many of them proved to perform poorly for a data set with this many categorical features. 
@@ -166,7 +244,7 @@ If we were to continue to work with this data set we might try to explore altern
 
 \section{Exploratory Analysis Code Segments}
 
-\subsection{Outlier Detection}
+\subsection{Outlier Detection} \label{sec:outlierCode}
 \begin{minted}[breaklines, frame = lines]{R}
 #age
 z_age <- scale(adult$age)
@@ -239,9 +317,66 @@ adult <- adult %>%
 
 \end{minted}
 
-\subsection{Summary Statistics}
+\subsection{Summary Statistics} \label{sec:sumStatCode}
 
-\subsection{Data Visualization}
+\begin{minted}[breaklines, frame = lines]{R}
+library(tidyverse)
+library(vtable)
+
+adultvars <- c("age", "workclass", "fnlwgt", "education", "educationnum", 
+               "maritalstatus", "occupation", "relationship", "race", "sex", 
+               "capitalgain", "capitalloss", "hoursperweek", "nativecountry", "50k")
+
+adult_raw <- read.csv("adult.data", header = FALSE, col.names = adultvars , skip = 1)
+
+#Remove unwanted variable:
+adult <- subset(adult_raw, select = -c(capitalgain, capitalloss, fnlwgt,
+                                    race, nativecountry, education, relationship))
+
+#sex and 50k binary:
+#Female = 1, Male = 2
+adult$sex <- as.factor(adult$sex)
+adult$sex<- as.numeric(adult$sex) 
+
+#<=50k = 1, >50k = 2
+adult$X50k <- as.factor(adult$X50k)
+adult$X50k <- as.numeric(adult$X50k)
+
+#Re-code workclass, maritalstatus
+adult <- adult %>%
+  mutate(workclass = ifelse(workclass %in% 
+                      c(" Federal-gov", " Local-gov", " State-gov"), 
+                      " gov", workclass))
+
+adult$maritalstatus = case_when(
+  adult$maritalstatus %in% c(" Married-civ-spouse", " Married-AF-spouse", " Married-spouse-absent") ~ "Married",
+  adult$maritalstatus %in% c(" Divorced", " Separated", " Widowed") ~ "DSW",
+  adult$maritalstatus %in% c(" Never-married") ~ "NeverMarried",
+)
+
+#workclass, occupation filtering:
+adult <- adult %>% 
+  filter(!(workclass %in% c(" ?", " Without-pay", " Never-worked")))
+
+adult <- adult %>%
+  filter(!(occupation %in% c(" ?")))
+
+#Add 3 to educationnum
+adult$educationnum <- adult$educationnum + 3
+
+## =========== SUMMARY STATISTICS ===========
+adult = read.csv("Adult_NoOutlier.csv")
+
+# Get the numeric variables
+adult_numeric = adult[,c(1,3,7)]
+
+# This line gives us LaTeX code for a table that may be pasted in our report.
+sumtable(adult_numeric, out="latex")
+sumtable(adult)
+
+\end{minted}
+
+\subsection{Data Visualization} \label{sec:dataVizCode}
 
 \begin{minted}[breaklines, frame = lines]{R}
 library(ggplot2)
@@ -330,7 +465,7 @@ adult_test = adult_sample[(n_train+1):n_obs,]
 # The code takes a long time to run, so pick a smaller set of values
 candidate_Cs = 2^seq(-7, 7, by = 1)
 
-K = 5 # 10-fold CV
+K = 5 
 err_matrix = matrix(0, K, length(candidate_Cs))
 
 # Matrix of folds 
@@ -391,7 +526,7 @@ print(sprintf("The final test error for the SVM procedure was %.3f", test_error)
 
 \end{minted}
 
-\subsection{Random Forest}
+\subsection{Random Forest} \label{sec:randForCode}
 
 \begin{minted}[breaklines, frame = lines]{R}
 library(dplyr)

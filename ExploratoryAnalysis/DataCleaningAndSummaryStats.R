@@ -42,6 +42,11 @@ adult <- adult %>%
 #Add 3 to educationnum
 adult$educationnum <- adult$educationnum + 3
 
-## SUMMARY STATISTICS 
+## =========== SUMMARY STATISTICS ===========
+adult = read.csv("Adult_NoOutlier.csv")
 
-# Print out numerical summary statistics using the vtable package and sumtable() function
+# Get the numeric variables
+adult_numeric = adult[,c(1,3,7)]
+
+sumtable(adult_numeric, out="latex")
+sumtable(adult)
