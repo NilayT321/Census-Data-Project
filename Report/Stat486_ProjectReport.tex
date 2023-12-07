@@ -158,8 +158,8 @@ If we were to continue to work with this data set we might try to explore altern
 \section{Qualitative Discussion}
 \hspace{\parindent} 
 
-    So through our findings in mainly section 2 and 3, we were able to conclude:
-
+    The findings from our initial random forest analysis provide valuable insights into the predictive modeling task. Despite the inclusion of seven pertinent variables in our random forest model, we encountered challenges in achieving a high variance explained. The low variance explained may suggest that the model struggled to capture intricate relationships within the data, potentially due to unobserved complexities or interactions among variables. However, the model exhibited a commendable performance with a low Mean Squared Error (MSE) of 0.06, indicating accurate predictions despite the limited variance explained.
+    Furthermore, a detailed examination of influential variables and their potential impact on the model is warranted. Visualization revealed no strong correlations between individual variables and the target income level, but careful feature selection and engineering may unearth meaningful relationships. In the future, refining the model architecture and considering more advanced strategies like hyperparameter tuning could optimize predictive accuracy. Overall, a meticulous and iterative approach, incorporating a variety of techniques, will be key to advancing the model's predictive capabilities and unraveling deeper insights from the dataset.
     As for future directions, though our data set still had many observations by the start of algorithms, due to extreme imbalanced distribution of data in categories such as \texttt{educationnum} and \texttt{workclass}, more observations would certainly help our algorithms. And if we had more features, which we thought we had plenty of before we started data cleaning, especially more numerical features, we would be allowed to not only provide better results with our current algorithms, but also perform other predictive algorithms, as many of them proved to perform poorly for a data set with this many categorical features. 
 
 \appendix 
