@@ -1,4 +1,5 @@
 library(tidyverse)
+library(vtable)
 
 adultvars <- c("age", "workclass", "fnlwgt", "education", "educationnum", 
                "maritalstatus", "occupation", "relationship", "race", "sex", 
@@ -40,3 +41,7 @@ adult <- adult %>%
 
 #Add 3 to educationnum
 adult$educationnum <- adult$educationnum + 3
+
+## SUMMARY STATISTICS 
+
+# Print out numerical summary statistics using the vtable package and sumtable() function
